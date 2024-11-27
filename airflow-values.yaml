@@ -8,15 +8,37 @@ airflow:
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
     AIRFLOW__WEBSERVER__WEB_SERVER_HOST: '0.0.0.0'
+    AIRFLOW__WEBSERVER__WEB_SERVER_PORT: 8080 # Ensure the webserver port is set explicitly.
   dags:
     path: /opt/airflow/dags
   logs:
     path: /opt/airflow/logs
+
 postgresql:
   enabled: true
+  persistence:
+    enabled: true # Enable persistence to retain data across pod restarts.
+    size: 10Gi # Adjust storage size as required.
+
 redis:
   enabled: true
+  persistence:
+    enabled: true # Enable persistence for Redis.
+    size: 2Gi # Adjust storage size as required.
+
 webserver:
   service:
     type: LoadBalancer
+    # ports:
+    #   - name: airflow-ui
+    #     port: 8080
+
+    # type: NodePort
+    # ports:
+    #   - name: airflow-ui
+    #     port: 8080
+    #     targetPort: 8080
+    #     nodePort: 31151
+
+    # port: 8080 # Ensure the service exposes the webserver on port 8080.
 
