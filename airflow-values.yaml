@@ -13,6 +13,7 @@ airflow:
     path: /opt/airflow/dags
   logs:
     path: /opt/airflow/logs
+webserverSecretKey: 'a054c14ac4ad790be409d99cd808c2ae'
 
 postgresql:
   enabled: true
