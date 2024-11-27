@@ -7,27 +7,16 @@ airflow:
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
     AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
-    AIRFLOW__WEBSERVER__WEB_SERVER_HOST: '0.0.0.0'   # Add this line
+    AIRFLOW__WEBSERVER__WEB_SERVER_HOST: '0.0.0.0'
   dags:
     path: /opt/airflow/dags
   logs:
     path: /opt/airflow/logs
 postgresql:
-  enabled: true  # Disable built-in PostgreSQL
-# externalDatabase:
-#   type: postgres
-#   host: postgres.default.svc.cluster.local
-#   port: 5432
-#   database: airflow
-#   user: airflow
-#   password: airflow
+  enabled: true
 redis:
-  enabled: true  # Disable built-in Redis
-# externalRedis:
-#   host: redis.default.svc.cluster.local
-#   port: 6379
+  enabled: true
 webserver:
   service:
     type: LoadBalancer
-  #port: 8080
 
