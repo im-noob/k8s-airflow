@@ -41,7 +41,7 @@ triggerer:
 
   extraVolumeMounts:
     - name: triggerer-data
-      mountPath: /opt/airflow/triggerer-data
+      mountPath: /opt/airflow/data
 
   persistence:
     enabled: false

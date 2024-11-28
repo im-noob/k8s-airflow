@@ -18,6 +18,7 @@ kubectl apply -f airflow-requirements-configmap.yaml -->
 
 # Create airflow namespace
 helm install airflow apache-airflow/airflow -n airflow -f airflow-values.yaml  --debug
+helm install airflow airflow-stable/airflow -f values 
 
 helm upgrade --install airflow apache-airflow/airflow -n airflow -f airflow-values.yaml  --debug
 
