@@ -1,23 +1,33 @@
 executor: CeleryExecutor
-airflow:
-  image:
-    repository: apache/airflow
-    tag: latest-python3.12
+
+images:
+  airflow:
+    repository: aaravonly4you/custom-airflow
+    tag: latest
     pullPolicy: Always
+        
+    # config:
+      # AIRFLOW__CORE__FERNET_KEY: 'qNsbDaiqY1ECxKYXGiTIJhIkUv7lR7yTN-wNtMZDY_0='
+      # AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+      # AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+      # AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      # AIRFLOW__WEBSERVER__WEB_SERVER_HOST: '0.0.0.0'
+      # AIRFLOW__WEBSERVER__WEB_SERVER_PORT: 8080 # Ensure the webserver port is set explicitly.
+    # dags:
+    #   path: /opt/airflow/dags
+    # logs:
+    #   path: /opt/airflow/logs
 
-  config:
-    AIRFLOW__CORE__FERNET_KEY: 'qNsbDaiqY1ECxKYXGiTIJhIkUv7lR7yTN-wNtMZDY_0='
-    AIRFLOW__CORE__EXECUTOR: CeleryExecutor
-    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
-    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
-    AIRFLOW__WEBSERVER__WEB_SERVER_HOST: '0.0.0.0'
-    AIRFLOW__WEBSERVER__WEB_SERVER_PORT: 8080 # Ensure the webserver port is set explicitly.
-  dags:
-    path: /opt/airflow/dags
-  logs:
-    path: /opt/airflow/logs
+    # configMap: "airflow-requirements"
 
-  configMap: "airflow-requirements"
+# extraEnv: |
+#   - name: AIRFLOW__WEBSERVER__WEB_SERVER_PORT
+#     value: 8084    
+# extraEnv: |
+#   - name: AIRFLOW__CORE__LOAD_EXAMPLES
+#      value: False
+#   - name: AIRFLOW__WEBSERVER__WEB_SERVER_PORT
+#      value: 8084
 
 webserverSecretKey: 'a054c14ac4ad790be409d99cd808c2ae'
 

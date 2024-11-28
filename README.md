@@ -17,7 +17,7 @@ helm uninstall airflow --namespace airflow
 kubectl apply -f airflow-requirements-configmap.yaml -->
 
 # Create airflow namespace
-helm install airflow apache-airflow/airflow -n airflow -f airflow-values.yaml  --debug
+helm install airflow apache-airflow/airflow -n airflow -f airflow-values.yaml  --debug --timeout 10m
 helm install airflow airflow-stable/airflow -f values 
 
 helm upgrade --install airflow apache-airflow/airflow -n airflow -f airflow-values.yaml  --debug
@@ -25,6 +25,7 @@ helm upgrade --install airflow apache-airflow/airflow -n airflow -f airflow-valu
 kubectl apply -f trigger-pvc.yaml -n airflow
 kubectl delete pvc triggerer-data-pvc -n airflow
 
+* kubectl describe pod airflow-triggerer-66c699b9c7-bjkc9 --namespace airflow
 * kubectl get pods -n airflow
 * kubectl exec -it airflow-redis-0 -n airflow -- /bin/bash
 * kubectl exec -it airflow-scheduler-69867d8f7b-d4kzj -n airflow -- /bin/bash
