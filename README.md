@@ -59,3 +59,20 @@ export KUBECONFIG=~/.kube/config
     kubectl delete all --all --all-namespaces
     kubectl delete pvc --all --all-namespaces
     kubectl delete pv --all
+
+# Add key to secret
+kubectl create secret generic git-ssh-key --from-file=ssh-privatekey=/home/aarav/.ssh/id_ed25519
+
+
+# dags:
+#   gitSync:
+#     enabled: true
+#     repo: git@bitbucket.org:amriteshonly4u/k8s-airflow.git # Bitbucket repo using SSH
+#     branch: master                                         # Specify the branch
+#     depth: 1                                               # Fetch only the latest commit
+#     revision: HEAD                                         # Use the latest revision
+#     subPath: dags                                          # Sync only the 'dags' folder
+#     sshKeySecret: git-ssh-key                              # SSH key for authentication
+#     sshKnownHosts: true
+#     sshKnownHostsConfig: |
+#       bitbucket.org ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIazEu89wgQZ4bqs3d63QSMzYVa0MuJ2e2gKTKqu+UUO
