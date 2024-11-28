@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: airflow-install-dependencies
+  namespace: airflow
+spec:
+  backoffLimit: 4
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: install-dependencies
+        image: apache/airflow
+        command:
+          - /bin/bash
+          - -c
+          - |
+            cp /tmp/install-dependencies.sh /tmp/run-script.sh && \
+            chmod +x /tmp/run-script.sh && \
+            /tmp/run-script.sh
+        volumeMounts:
+        - name: requirements-volume
+          mountPath: /tmp/requirements.txt
+          subPath: requirements.txt
+        - name: script-volume
+          mountPath: /tmp/install-dependencies.sh
+          subPath: install-dependencies.sh
+        - name: shared-volume
+          mountPath: /opt/airflow/dependencies
+      volumes:
+      - name: requirements-volume
+        configMap:
+          name: airflow-requirements
+      - name: script-volume
+        configMap:
+          name: install-script
+      - name: shared-volume
+        persistentVolumeClaim:
+          claimName: airflow-shared-pvc

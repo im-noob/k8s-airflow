@@ -49,6 +49,8 @@ mkdir ~/.kube && sudo k3s kubectl config view --raw > "$KUBECONFIG" && chmod 600
 helm repo add apache-airflow https://airflow.apache.org
 helm repo update
 
+kubectl apply -f airflow-trigger-pvc.yaml -n airflow
+
 kubectl create namespace airflow
 
 helm install airflow apache-airflow/airflow --namespace airflow -f airflow-values.yaml --debug

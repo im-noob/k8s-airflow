@@ -13,14 +13,20 @@ pip list | grep 'fuzz'
 # Delete old name space
 helm uninstall airflow --namespace airflow
 
-# Apply Configmap
-kubectl apply -f airflow-requirements-configmap.yaml
+<!-- # Apply Configmap
+kubectl apply -f airflow-requirements-configmap.yaml -->
 
 # Create airflow namespace
-helm install airflow apache-airflow/airflow --namespace airflow -f airflow-values.yaml  --debug
+helm install airflow apache-airflow/airflow -n airflow -f airflow-values.yaml  --debug
+
+helm upgrade --install airflow apache-airflow/airflow -n airflow -f airflow-values.yaml  --debug
+
+kubectl apply -f trigger-pvc.yaml -n airflow
+kubectl delete pvc triggerer-data-pvc -n airflow
 
 * kubectl get pods -n airflow
-* kubectl exec -it airflow-webserver-667cd97789-tjtjk -n airflow -- /bin/bash
+* kubectl exec -it airflow-redis-0 -n airflow -- /bin/bash
+* kubectl exec -it airflow-scheduler-69867d8f7b-d4kzj -n airflow -- /bin/bash
 * kubectl exec -it airflow-triggerer-0 -n airflow -- /bin/bash
 * kubectl logs -f airflow-webserver-667cd97789-tjtjk -n airflow
 * kubectl describe pod airflow-webserver-667cd97789-tjtjk -n airflow | grep airflow-requirements
@@ -40,3 +46,9 @@ export KUBECONFIG=~/.kube/config
     chmod 600 "$KUBECONFIG"
 
 
+# Creating job
+
+    kubectl delete job airflow-install-dependencies -n airflow
+    kubectl apply -f airflow-install-requirements-job.yaml
+    kubectl logs job/airflow-install-dependencies -n airflow
+    

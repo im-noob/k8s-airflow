@@ -1,8 +1,8 @@
 executor: CeleryExecutor
 airflow:
   image:
-    repository: aaravonly4you/custom-airflow
-    tag: latest
+    repository: apache/airflow
+    tag: latest-python3.12
     pullPolicy: Always
 
   config:
@@ -16,8 +16,7 @@ airflow:
     path: /opt/airflow/dags
   logs:
     path: /opt/airflow/logs
-  extraPipPackages: |
-    -r /opt/airflow/requirements.txt
+
   configMap: "airflow-requirements"
 
 webserverSecretKey: 'a054c14ac4ad790be409d99cd808c2ae'
@@ -34,19 +33,19 @@ redis:
     enabled: true # Enable persistence for Redis.
     size: 2Gi # Adjust storage size as required.
 
+triggerer:
+  extraVolumes:
+    - name: triggerer-data
+      persistentVolumeClaim:
+        claimName: triggerer-data-pvc
+
+  extraVolumeMounts:
+    - name: triggerer-data
+      mountPath: /opt/airflow/triggerer-data
+
+  persistence:
+    enabled: false
+
 webserver:
   service:
     type: LoadBalancer
-    # ports:
-    #   - name: airflow-ui
-    #     port: 8080
-
-    # type: NodePort
-    # ports:
-    #   - name: airflow-ui
-    #     port: 8080
-    #     targetPort: 8080
-    #     nodePort: 31151
-
-    # port: 8080 # Ensure the service exposes the webserver on port 8080.
-
