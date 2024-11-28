@@ -1,22 +1,10 @@
 executor: CeleryExecutor
 airflow:
-  initContainers:
-    - name: install-dependencies
-      image: apache/airflow
-      command:
-        - /bin/bash
-        - -c
-        - |
-          pip install -r /opt/airflow/requirements.txt
-      volumeMounts:
-        - name: requirements-volume
-          mountPath: /opt/airflow/requirements/
-  volumes:
-    - name: requirements-volume
-      configMap:
-        name: airflow-requirements
   image:
-    repository: apache/airflow
+    repository: aaravonly4you/custom-airflow
+    tag: latest
+    pullPolicy: Always
+
   config:
     AIRFLOW__CORE__FERNET_KEY: 'qNsbDaiqY1ECxKYXGiTIJhIkUv7lR7yTN-wNtMZDY_0='
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor

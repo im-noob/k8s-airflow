@@ -19,12 +19,13 @@ kubectl apply -f airflow-requirements-configmap.yaml
 # Create airflow namespace
 helm install airflow apache-airflow/airflow --namespace airflow -f airflow-values.yaml  --debug
 
-kubectl get pods -n airflow
-kubectl exec -it airflow-webserver-667cd97789-tjtjk -n airflow -- /bin/bash
-kubectl exec -it airflow-triggerer-0 -n airflow -- /bin/bash
-kubectl logs -f airflow-webserver-667cd97789-tjtjk -n airflow
-kubectl describe pod airflow-webserver-667cd97789-tjtjk -n airflow | grep airflow-requirements
-docker run -it custom-airflow:latest /bin/bash
+* kubectl get pods -n airflow
+* kubectl exec -it airflow-webserver-667cd97789-tjtjk -n airflow -- /bin/bash
+* kubectl exec -it airflow-triggerer-0 -n airflow -- /bin/bash
+* kubectl logs -f airflow-webserver-667cd97789-tjtjk -n airflow
+* kubectl describe pod airflow-webserver-667cd97789-tjtjk -n airflow | grep airflow-requirements
+* docker run -it custom-airflow:latest /bin/bash
+
 # Setup 
 #mininkube
 #alias kubectl="minikube kubectl --"
@@ -33,8 +34,9 @@ docker run -it custom-airflow:latest /bin/bash
 export KUBECONFIG=~/.kube/config
 
 # to add files here 
-mkdir ~/.kube 2> /dev/null
-sudo k3s kubectl config view --raw > "$KUBECONFIG"
-chmod 600 "$KUBECONFIG"
+
+    mkdir ~/.kube 2> /dev/null
+    sudo k3s kubectl config view --raw > "$KUBECONFIG"
+    chmod 600 "$KUBECONFIG"
 
 
