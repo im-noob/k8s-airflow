@@ -53,3 +53,8 @@ export KUBECONFIG=~/.kube/config
     kubectl apply -f airflow-install-requirements-job.yaml
     kubectl logs job/airflow-install-dependencies -n airflow
     
+# Deleting Everything
+
+    kubectl delete all --all --all-namespaces
+    kubectl delete pvc --all --all-namespaces
+    kubectl delete pv --all
