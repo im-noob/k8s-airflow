@@ -60,6 +60,28 @@ webserver:
   service:
     type: LoadBalancer
 
+  livenessProbe:
+    initialDelaySeconds: 150
+    timeoutSeconds: 50
+    failureThreshold: 50
+    periodSeconds: 100
+    scheme: HTTP
+
+  readinessProbe:
+    initialDelaySeconds: 150
+    timeoutSeconds: 50
+    failureThreshold: 50
+    periodSeconds: 100
+    scheme: HTTP
+
+  # Wait for at most 1 minute (6*10s) for the webserver container to startup.
+  # livenessProbe kicks in after the first successful startupProbe
+  startupProbe:
+    timeoutSeconds: 200
+    failureThreshold: 60
+    periodSeconds: 100
+    scheme: HTTP
+
 dags:
   gitSync:
     enabled: true
