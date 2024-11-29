@@ -41,6 +41,11 @@ source ~/.bashrc
 mkdir ~/.kube && sudo k3s kubectl config view --raw > "$KUBECONFIG" && chmod 600 "$KUBECONFIG"
 
 
+# BUilding airflow
+
+docker build -t custom-airflow:latest .
+docker tag custom-airflow:latest aaravonly4you/custom-airflow:latest
+docker push aaravonly4you/custom-airflow:latest
 
 
 # installing airflow

@@ -6,7 +6,7 @@ docker build -t custom-airflow:latest .
 docker tag custom-airflow:latest aaravonly4you/custom-airflow:latest
 docker push aaravonly4you/custom-airflow:latest
 
-docker run -it aaravonly4you/custom-airflow:latest /bin/bash
+docker run -it --entrypoint /bin/bash aaravonly4you/custom-airflow:latest
 
 pip list | grep 'fuzz'
 
@@ -99,3 +99,12 @@ docker run -it --name git-sync-test \
   -e GIT_SYNC_PERIOD=5s \
   -v /home/aarav/.ssh/id_ed25519:/tmp/ssh-privatekey:ro \
   registry.k8s.io/git-sync/git-sync:v4.3.0 /bin/bash
+
+
+dag = DAG('hello_world', description='Hello World DAG',
+          schedule_interval='0 12 * * *',
+          start_date=datetime(2022, 8, 24), catchup=False)
+
+hello_operator = PythonOperator(task_id='hello_task', python_callable=print_hello, dag=dag)
+
+hello_operator

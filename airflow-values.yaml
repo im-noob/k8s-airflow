@@ -82,19 +82,20 @@ webserver:
     periodSeconds: 20
     scheme: HTTP
 
-dags:
-  # mountPath: /opt/airflow/dags/repo/dags
-  gitSync:
-    enabled: true
+# dags:
+#   # mountPath: /opt/airflow/dags/repo/dags
+#   gitSync:
+#     enabled: true
     
-    repo: git@bitbucket.org:amriteshonly4u/k8s-airflow.git
-    branch: master
-    rev: HEAD
-    depth: 1
-    maxFailures: 3
-    # subPath: "repo/dags"
-    period: 15s
-    sshKeySecret: airflow-ssh-secret
+#     repo: git@bitbucket.org:amriteshonly4u/k8s-airflow.git
+#     branch: master
+#     rev: HEAD
+#     depth: 1
+#     maxFailures: 3
+#     subPath: ""
+#     # subPath: "repo/dags"
+#     period: 15s
+#     sshKeySecret: airflow-ssh-secret
     
 
 extraEnv: |
