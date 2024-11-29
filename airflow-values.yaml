@@ -137,6 +137,35 @@ workers:
   #   enabled: false
 
 scheduler:
+  extraInitContainers:
+    - name: git-sync
+      image: k8s.gcr.io/git-sync/git-sync:v3.6.5
+      env:
+        - name: GIT_SYNC_REPO
+          value: git@bitbucket.org:amriteshonly4u/k8s-airflow.git
+        - name: GIT_SYNC_BRANCH
+          value: master
+        - name: GIT_SYNC_REV
+          value: HEAD
+        - name: GIT_SYNC_DEPTH
+          value: "1"
+        - name: GIT_SYNC_WAIT
+          value: "15"  # Poll every 15 seconds
+        - name: GIT_SYNC_MAX_SYNC_FAILURES
+          value: "3000"
+        - name: GIT_SYNC_SSH
+          value: "true"
+        - name: GIT_SYNC_ADD_USER
+          value: "true"  # Ensures synced files are writable
+        - name: GIT_KNOWN_HOSTS
+          value: "false"  # Disable known_hosts checking if not needed
+      volumeMounts:
+        - name: airflow-storage
+          mountPath: /opt/airflow/dags-git  # Sync destination folder
+        - name: ssh-key-volume
+          mountPath: /etc/git-secret
+          readOnly: true
+
   extraVolumes:
     - name: triggerer-data
       persistentVolumeClaim:
@@ -144,13 +173,19 @@ scheduler:
     - name: airflow-storage
       persistentVolumeClaim:
         claimName: shared-data-pvc
+    - name: ssh-key-volume
+      secret:
+        secretName: git-ssh-key  # Ensure this secret exists and contains your Git SSH key
+
 
   extraVolumeMounts:
     - name: triggerer-data
       mountPath: /opt/airflow/data-old
     - name: airflow-storage
       mountPath: /opt/airflow/data-new
-
+    - name: ssh-key-volume
+      mountPath: /etc/git-secret  # SSH key for Git Sync
+      readOnly: true
   # persistence:
   #   enabled: false
 

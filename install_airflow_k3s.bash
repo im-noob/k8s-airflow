@@ -60,6 +60,7 @@ kubectl create namespace airflow
 
 kubectl apply -f airflow-shared-data-pvc.yaml -n airflow
 kubectl apply -f airflow-trigger-pvc.yaml -n airflow
+kubectl create secret generic git-ssh-key --from-file=ssh-privatekey=/home/aarav/.ssh/id_ed25519 -n airflow
 
 helm install airflow apache-airflow/airflow --namespace airflow -f airflow-values.yaml --debug
 

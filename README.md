@@ -38,9 +38,10 @@ kubectl delete pvc triggerer-data-pvc -n airflow
 * kubectl exec -it airflow-redis-0 -n airflow -- /bin/bash
 * kubectl exec -it airflow-scheduler-69867d8f7b-d4kzj -n airflow -- /bin/bash
 * kubectl exec -it airflow-triggerer-0 -n airflow -- /bin/bash
-* kubectl logs -f airflow-webserver-667cd97789-tjtjk -n airflow
+* kubectl logs -f airflow-scheduler-667f478d7d-9g29j -n airflow
 * kubectl describe pod airflow-webserver-667cd97789-tjtjk -n airflow | grep airflow-requirements
 * docker run -it custom-airflow:latest /bin/bash
+kubectl exec -it airflow-scheduler-667f478d7d-9g29j -c git-sync -n airflow -- /bin/bash
 
 # Setup 
 #mininkube
