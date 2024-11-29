@@ -186,8 +186,7 @@ scheduler:
     - name: ssh-key-volume
       mountPath: /etc/git-secret  # SSH key for Git Sync
       readOnly: true
-  # persistence:
-  #   enabled: false
+
 
 
 extraEnv: |
