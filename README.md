@@ -61,7 +61,7 @@ export KUBECONFIG=~/.kube/config
     kubectl delete pv --all
 
 # Add key to secret
-kubectl create secret generic git-ssh-key --from-file=ssh-privatekey=/home/aarav/.ssh/id_ed25519
+kubectl create secret generic git-ssh-key --from-file=ssh-privatekey=/home/aarav/.ssh/id_ed25519 -n airflow
 
 
 # dags:
@@ -76,3 +76,21 @@ kubectl create secret generic git-ssh-key --from-file=ssh-privatekey=/home/aarav
 #     sshKnownHosts: true
 #     sshKnownHostsConfig: |
 #       bitbucket.org ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIazEu89wgQZ4bqs3d63QSMzYVa0MuJ2e2gKTKqu+UUO
+
+
+docker rm -f git-sync-test
+docker run -it --name git-sync-test \
+  -e GIT_SYNC_REPO=git@bitbucket.org:amriteshonly4u/k8s-airflow.git \
+  -e GIT_SYNC_BRANCH=master \
+  -e GIT_SYNC_REV=HEAD \
+  -e GIT_SYNC_DEPTH=1 \
+  -e GIT_SYNC_MAX_SYNC_FAILURES=3 \
+  -e GIT_SYNC_SUBPATH=dags \
+  -e GIT_SYNC_SSH=true \
+  -e GIT_SYNC_SSH_KEY_FILE=/etc/git-secret/ssh-privatekey \
+  -e GIT_SYNC_KNOWN_HOSTS=true \
+  -e GIT_SYNC_KNOWN_HOSTS_FILE=/etc/git-secret/known_hosts \
+  -e GIT_SYNC_PERIOD=5s \
+  -v /home/aarav/.ssh/id_ed25519:/etc/git-secret/ssh-privatekey:ro \
+  -v /home/aarav/.ssh/known_hosts:/etc/git-secret/known_hosts:ro \
+  registry.k8s.io/git-sync/git-sync:v4.3.0 /bin/bash
