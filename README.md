@@ -61,8 +61,14 @@ export KUBECONFIG=~/.kube/config
     kubectl delete pv --all
 
 # Add key to secret
-kubectl create secret generic git-ssh-key --from-file=ssh-privatekey=/home/aarav/.ssh/id_ed25519 -n airflow
-kubectl logs airflow-triggerer-5884d69c4b-hf4r5 -c git-sync-init --namespace airflow
+
+    kubectl create secret generic git-ssh-key --from-file=ssh-privatekey=/home/aarav/.ssh/id_ed25519 -n airflow
+    kubectl logs airflow-triggerer-5884d69c4b-hf4r5 -c git-sync-init --namespace airflow
+    kubectl exec -it airflow-triggerer-6b64b9b664-rlfg6 -c git-sync-init --namespace airflow -- /bin/sh
+    kubectl describe secret git-ssh-key --namespace airflow
+    kubectl get secret git-ssh-key --namespace airflow -o jsonpath="{.data.ssh-privatekey}" | base64 --decode
+
+    kubectl apply -f airflow-ssh-secret.yaml --namespace airflow
 
 
 # dags:
