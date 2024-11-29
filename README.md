@@ -12,7 +12,11 @@ pip list | grep 'fuzz'
 
 # Delete old name space
 helm uninstall airflow --namespace airflow
-
+kubectl delete pvc --all --all-namespaces
+kubectl delete pv --all
+kubectl apply -f airflow-shared-data-pvc.yaml -n airflow
+kubectl apply -f airflow-trigger-pvc.yaml -n airflow
+helm install airflow apache-airflow/airflow -n airflow -f airflow-values.yaml  --debug
 <!-- # Apply Configmap
 kubectl apply -f airflow-requirements-configmap.yaml -->
 

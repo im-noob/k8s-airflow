@@ -54,9 +54,12 @@ docker push aaravonly4you/custom-airflow:latest
 helm repo add apache-airflow https://airflow.apache.org
 helm repo update
 
-kubectl apply -f airflow-trigger-pvc.yaml -n airflow
+# kubectl apply -f airflow-trigger-pvc.yaml -n airflow
 
 kubectl create namespace airflow
+
+kubectl apply -f airflow-shared-data-pvc.yaml -n airflow
+kubectl apply -f airflow-trigger-pvc.yaml -n airflow
 
 helm install airflow apache-airflow/airflow --namespace airflow -f airflow-values.yaml --debug
 

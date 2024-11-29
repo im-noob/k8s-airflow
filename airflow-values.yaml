@@ -48,10 +48,15 @@ triggerer:
     - name: triggerer-data
       persistentVolumeClaim:
         claimName: triggerer-data-pvc
+    - name: airflow-storage
+      persistentVolumeClaim:
+        claimName: shared-data-pvc
 
   extraVolumeMounts:
     - name: triggerer-data
-      mountPath: /opt/airflow/data
+      mountPath: /opt/airflow/data-old
+    - name: airflow-storage
+      mountPath: /opt/airflow/data-new
 
   persistence:
     enabled: false
@@ -82,6 +87,15 @@ webserver:
     periodSeconds: 20
     scheme: HTTP
 
+  # extraVolumes:
+  #   - name: airflow-storage
+  #     persistentVolumeClaim:
+  #       claimName: shared-data-pvc
+
+  # extraVolumeMounts:
+  #   - name: airflow-storage
+  #     mountPath: /opt/airflow/data
+
 # dags:
 #   # mountPath: /opt/airflow/dags/repo/dags
 #   gitSync:
@@ -97,6 +111,33 @@ webserver:
 #     period: 15s
 #     sshKeySecret: airflow-ssh-secret
     
+
+# workers:
+#   extraVolumes:
+#     - name: airflow-storage
+#       persistentVolumeClaim:
+#         claimName: shared-data-pvc
+
+#   extraVolumeMounts:
+#     - name: airflow-storage
+#       mountPath: /opt/airflow/data
+      
+#   persistence:
+#     enabled: false
+
+# scheduler:
+#   extraVolumes:
+#     - name: airflow-storage
+#       persistentVolumeClaim:
+#         claimName: shared-data-pvc
+
+#   extraVolumeMounts:
+#     - name: airflow-storage
+#       mountPath: /opt/airflow/data
+
+#   persistence:
+#     enabled: false
+
 
 extraEnv: |
   - name: AIRFLOW__WEBSERVER__INSTANCE_NAME
