@@ -61,37 +61,42 @@ webserver:
     type: LoadBalancer
 
   livenessProbe:
-    initialDelaySeconds: 150
-    timeoutSeconds: 50
-    failureThreshold: 50
-    periodSeconds: 100
+    initialDelaySeconds: 15
+    timeoutSeconds: 5
+    failureThreshold: 5
+    periodSeconds: 10
     scheme: HTTP
 
   readinessProbe:
-    initialDelaySeconds: 150
-    timeoutSeconds: 50
-    failureThreshold: 50
-    periodSeconds: 100
+    initialDelaySeconds: 15
+    timeoutSeconds: 5
+    failureThreshold: 5
+    periodSeconds: 10
     scheme: HTTP
 
   # Wait for at most 1 minute (6*10s) for the webserver container to startup.
   # livenessProbe kicks in after the first successful startupProbe
   startupProbe:
-    timeoutSeconds: 200
-    failureThreshold: 60
-    periodSeconds: 100
+    timeoutSeconds: 20
+    failureThreshold: 6
+    periodSeconds: 20
     scheme: HTTP
 
 dags:
+  # mountPath: /opt/airflow/dags/repo/dags
   gitSync:
     enabled: true
-
+    
     repo: git@bitbucket.org:amriteshonly4u/k8s-airflow.git
     branch: master
     rev: HEAD
     depth: 1
     maxFailures: 3
-    subPath: "repo/dags"
-    sshKeySecret: airflow-ssh-secret
+    # subPath: "repo/dags"
     period: 15s
+    sshKeySecret: airflow-ssh-secret
     
+
+extraEnv: |
+  - name: AIRFLOW__WEBSERVER__INSTANCE_NAME
+    value: 'K8S'
