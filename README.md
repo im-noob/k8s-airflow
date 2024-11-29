@@ -21,8 +21,8 @@ pip list | grep 'fuzz'
     kubectl get pvc -n airflow
     kubectl get pv -n airflow
 
-<!-- # Apply Configmap
-kubectl apply -f airflow-requirements-configmap.yaml -->
+
+kubectl apply -f airflow-requirements-configmap.yaml
 
 # Create airflow namespace
 helm install airflow apache-airflow/airflow -n airflow -f airflow-values.yaml  --debug --timeout 10m
