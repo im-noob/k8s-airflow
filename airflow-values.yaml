@@ -92,8 +92,8 @@ dags:
     #
     # If you are using an ssh private key, you can additionally
     # specify the content of your known_hosts file, example:
-    knownHosts: |
-      bitbucket.org ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIazEu89wgQZ4bqs3d63QSMzYVa0MuJ2e2gKTKqu+UUO
+    # knownHosts: |
+    #   bitbucket.org ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIazEu89wgQZ4bqs3d63QSMzYVa0MuJ2e2gKTKqu+UUO
       
     # interval between git sync attempts in seconds
     # high values are more likely to cause DAGs to become out of sync between different components
