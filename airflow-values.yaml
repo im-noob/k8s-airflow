@@ -69,11 +69,7 @@ dags:
     rev: HEAD
     depth: 1
     maxFailures: 3
-    subPath: "dags"
+    subPath: "repo/dags"
     sshKeySecret: airflow-ssh-secret
-
-    # knownHosts: |
-    #   bitbucket.org ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIazEu89wgQZ4bqs3d63QSMzYVa0MuJ2e2gKTKqu+UUO
-
     period: 15s
     
