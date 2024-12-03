@@ -146,8 +146,8 @@ scheduler:
         - name: GITSYNC_BRANCH
           value: master
         - name: GITSYNC_ROOT
-          value: "/git"
-        - name: GIT_SSH_KEY_FILE
+          value: "/opt/airflow/data-new"
+        - name: GITSYNC_SSH_KEY_FILE
           value: "/etc/git-secret/ssh-privatekey"
         - name: GITSYNC_REV
           value: HEAD
@@ -161,20 +161,18 @@ scheduler:
           value: "true"
         - name: GITSYNC_ADD_USER
           value: "true"  # Ensures synced files are writable
-        - name: GIT_KNOWN_HOSTS
+        - name: GITSYNC_ONE_TIME
+          value: "true"
+        - name: GITSYNC_SSH_KNOWN_HOSTS
           value: "false"  # Disable known_hosts checking if not needed
       volumeMounts:
-        - name: git-sync-volume
-          mountPath: /git # Match this to the GIT_SYNC_ROOT
         - name: airflow-storage
-          mountPath: /opt/airflow/dags-git  # Sync destination folder
+          mountPath: /opt/airflow/data-new  # Sync destination folder # Match this to the GITSYNC_ROOT
         - name: ssh-key-volume
           mountPath: /etc/git-secret
-          # readOnly: true
+          readOnly: true
 
   extraVolumes:
-    - name: git-sync-volume
-      emptyDir: {}
     - name: triggerer-data
       persistentVolumeClaim:
         claimName: triggerer-data-pvc
