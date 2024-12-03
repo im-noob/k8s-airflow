@@ -137,7 +137,7 @@ workers:
   #   enabled: false
 
 scheduler:
-  extraInitContainers:
+  extraContainers:  # Adding git-sync as a sidecar container
     - name: git-sync
       image: k8s.gcr.io/git-sync/git-sync:v4.3.0
       env:
@@ -154,7 +154,7 @@ scheduler:
         - name: GITSYNC_DEPTH
           value: "1"
         - name: GITSYNC_WAIT
-          value: "30"  # Poll every 15 seconds
+          value: "15"  # Poll every 30 seconds
         - name: GITSYNC_MAX_SYNC_FAILURES
           value: "3000"
         - name: GITSYNC_SSH
@@ -162,9 +162,11 @@ scheduler:
         - name: GITSYNC_ADD_USER
           value: "true"  # Ensures synced files are writable
         - name: GITSYNC_ONE_TIME
-          value: "true"
+          value: "false"  # Enable continuous syncing
         - name: GITSYNC_SSH_KNOWN_HOSTS
           value: "false"  # Disable known_hosts checking if not needed
+        - name: GITSYNC_MAX_SYNC_FAILURES
+          value: "10"
       volumeMounts:
         - name: airflow-storage
           mountPath: /opt/airflow/data-new  # Sync destination folder # Match this to the GITSYNC_ROOT
