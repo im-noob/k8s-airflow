@@ -28,7 +28,6 @@ kubectl get nodes
 sudo ln -s /usr/local/bin/k3s /usr/local/bin/kubectl
 kubectl version --client
 
-
 sudo systemctl status k3s
 
 # installing helm
