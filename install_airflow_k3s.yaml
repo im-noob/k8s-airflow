@@ -1,0 +1,145 @@
+---
+- name: Setup Docker, k3s, and Airflow
+  hosts: all
+  become: yes
+
+  vars:
+    docker_gpg_url: https://download.docker.com/linux/ubuntu/gpg
+    docker_repo: "deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    k3s_install_url: https://get.k3s.io
+    helm_install_script: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+
+  tasks:
+    - name: Update and upgrade system packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Install prerequisite packages
+      apt:
+        name:
+          - curl
+          - wget
+          - apt-transport-https
+          - git
+          - ca-certificates
+        state: present
+
+    - name: Add Docker's official GPG key
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Download Docker GPG key
+      get_url:
+        url: "{{ docker_gpg_url }}"
+        dest: /etc/apt/keyrings/docker.asc
+        mode: '0644'
+
+    - name: Add Docker repository to apt sources
+      ansible.builtin.shell: |
+        echo "{{ docker_repo }}" > /etc/apt/sources.list.d/docker.list
+      args:
+        executable: /bin/bash
+
+    - name: Update package list
+      apt:
+        update_cache: yes
+
+    - name: Install Docker packages
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+
+    - name: Install k3s
+      ansible.builtin.shell: "curl -sfL {{ k3s_install_url }} | sh -"
+      args:
+        executable: /bin/bash
+
+    - name: Verify k3s installation
+      command: kubectl get nodes
+      register: k3s_nodes
+      failed_when: "k3s_nodes.rc != 0"
+
+    - name: Create symlink for kubectl
+      file:
+        src: /usr/local/bin/k3s
+        dest: /usr/local/bin/kubectl
+        state: link
+
+    - name: Get kubectl version
+      command: kubectl version --client
+
+    - name: Ensure k3s service is running
+      service:
+        name: k3s
+        state: started
+
+    - name: Install Helm
+      ansible.builtin.shell: "curl {{ helm_install_script }} | bash"
+      args:
+        executable: /bin/bash
+
+    - name: Verify Helm installation
+      command: helm version
+
+    - name: Configure kubeconfig
+      file:
+        path: "{{ ansible_env.HOME }}/.kube"
+        state: directory
+        mode: '0700'
+
+    - name: Copy k3s kubeconfig
+      copy:
+        src: /etc/rancher/k3s/k3s.yaml
+        dest: "{{ ansible_env.HOME }}/.kube/config"
+        remote_src: yes
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0600'
+
+    - name: Export KUBECONFIG environment variable
+      lineinfile:
+        path: "{{ ansible_env.HOME }}/.bashrc"
+        line: "export KUBECONFIG={{ ansible_env.HOME }}/.kube/config"
+        state: present
+
+    - name: Add Apache Airflow Helm repo if not already added
+      command: helm repo list | grep apache-airflow || helm repo add apache-airflow https://airflow.apache.org
+
+    - name: Update Helm repositories
+      command: helm repo update
+
+    - name: Create Airflow namespace
+      command: kubectl create namespace airflow
+      args:
+        creates: /var/run/kubernetes/airflow-namespace
+
+    - name: Apply PVC manifests for Airflow
+      command: kubectl apply -f {{ item }} -n airflow
+      with_items:
+        - airflow-shared-data-pvc.yaml
+        - airflow-trigger-pvc.yaml
+
+    - name: Create Airflow Git SSH key secret
+      command: |
+        kubectl create secret generic git-ssh-key \
+          --from-file=ssh-privatekey={{ ansible_env.HOME }}/.ssh/id_ed25519 -n airflow
+
+    - name: Install Airflow using Helm
+      command: |
+        helm install airflow apache-airflow/airflow \
+          --namespace airflow -f airflow-values.yaml --debug
+
+    - name: Verify Airflow pods
+      command: kubectl get pods --namespace airflow
+
+    - name: Verify Airflow resources
+      command: kubectl get all --namespace airflow
+

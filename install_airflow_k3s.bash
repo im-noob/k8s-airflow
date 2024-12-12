@@ -14,7 +14,7 @@ echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
   $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
+sudo apt-get update -y
 
 # installing Docker
 sudo apt install -y  docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin 
@@ -35,17 +35,14 @@ curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
 helm version
 
-echo 'export KUBECONFIG=~/.kube/config' >> ~/.bashrc
 mkdir ~/.kube 
 sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
-sudo chown $(whoami):$(whoami) ~/.kube/config 
+sudo chown $(whoami):$(whoami) ~/.kube/config
 
 sleep 60s
 export KUBECONFIG=~/.kube/config
 echo 'export KUBECONFIG=~/.kube/config' >> ~/.bashrc
 source ~/.bashrc
-
-# sudo k3s kubectl config view --raw > "$KUBECONFIG" 
 # chmod 600 "$KUBECONFIG"
 # export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 # sudo service k3s stop
@@ -67,7 +64,6 @@ helm repo update
 # kubectl apply -f airflow-trigger-pvc.yaml -n airflow
 
 kubectl create namespace airflow
-
 kubectl apply -f airflow-shared-data-pvc.yaml -n airflow
 kubectl apply -f airflow-trigger-pvc.yaml -n airflow
 kubectl create secret generic git-ssh-key --from-file=ssh-privatekey=/home/$(whoami)/.ssh/id_ed25519 -n airflow
