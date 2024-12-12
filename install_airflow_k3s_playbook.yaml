@@ -141,7 +141,6 @@
     - name: Create Airflow namespace
       command: "kubectl create namespace airflow"
       register: airflow_namespace
-      failed_when: "'AlreadyExists' not in airflow_namespace.stderr"
 
     - name: Apply PVC configurations
       shell:
