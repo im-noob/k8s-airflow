@@ -102,6 +102,8 @@
     - name: Source the kubeconfig
       shell:
         cmd: "source ~/.bashrc"
+      args:
+        executable: /bin/bash
 
     - name: Clone Airflow Git repository
       git:

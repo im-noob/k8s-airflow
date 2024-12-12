@@ -117,3 +117,8 @@ dag = DAG('hello_world', description='Hello World DAG',
 hello_operator = PythonOperator(task_id='hello_task', python_callable=print_hello, dag=dag)
 
 hello_operator
+
+# Localhost ansible
+
+[local]
+localhost ansible_connection=local
