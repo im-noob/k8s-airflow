@@ -122,3 +122,19 @@ hello_operator
 
 [local]
 localhost ansible_connection=local
+
+# uninstall k3s
+sudo systemctl stop k3s
+/usr/local/bin/k3s-uninstall.sh
+sudo rm -rf /etc/rancher/k3s
+sudo rm -rf /var/lib/rancher/k3s
+sudo rm -rf /var/lib/k3s
+sudo rm -rf /var/log/k3s
+sudo rm -rf /etc/k3s
+sudo rm -rf ~/.kube
+sudo rm -rf /etc/cni
+sudo rm -rf /var/lib/cni
+sudo rm /usr/local/bin/helm
+rm -rf ~/.helm
+rm -rf ~/.kube/helm
+

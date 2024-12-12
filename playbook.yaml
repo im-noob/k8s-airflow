@@ -7,13 +7,11 @@
     kubeconfig_path: "~/.kube/config"
 
   tasks:
-    # System updates (requires elevated privileges)
     - name: Update and upgrade apt packages
       apt:
         update_cache: yes
         upgrade: dist
         force_apt_get: yes
-      become: true
 
     - name: Install required packages
       apt:
@@ -24,20 +22,17 @@
           - git
           - ca-certificates
         state: present
-      become: true
 
     - name: Add Docker GPG key
       ansible.builtin.command:
         cmd: "curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc"
       args:
         creates: /etc/apt/keyrings/docker.asc
-      become: true
 
     - name: Set permissions for Docker GPG key
       file:
         path: /etc/apt/keyrings/docker.asc
         mode: "0644"
-      become: true
 
     - name: Add Docker repository
       ansible.builtin.shell:
@@ -46,12 +41,10 @@
           tee /etc/apt/sources.list.d/docker.list
       args:
         creates: /etc/apt/sources.list.d/docker.list
-      become: true
 
     - name: Update package index for Docker
       apt:
         update_cache: yes
-      become: true
 
     - name: Install Docker and dependencies
       apt:
@@ -62,13 +55,11 @@
           - docker-buildx-plugin
           - docker-compose-plugin
         state: present
-      become: true
 
     - name: Install K3s
       shell:
         cmd: "curl -sfL https://get.k3s.io | sh -"
         creates: /usr/local/bin/k3s
-      become: true
 
     - name: Verify K3s installation
       command: "/usr/local/bin/k3s --version"
@@ -78,7 +69,6 @@
         src: /usr/local/bin/k3s
         dest: /usr/local/bin/kubectl
         state: link
-      become: true
 
     - name: Verify kubectl version
       command: "/usr/local/bin/kubectl version --client"
@@ -86,7 +76,6 @@
     - name: Check K3s service status
       command: "systemctl status k3s --no-pager"
       register: k3s_status
-      become: true
 
     - name: Install Helm
       shell:
@@ -96,18 +85,13 @@
     - name: Verify Helm installation
       command: "/usr/local/bin/helm version"
 
-
-    - name: Ensure .kube directory exists
-      shell: mkdir -p ~/.kube
-      
     - name: Configure kubeconfig
       shell:
         cmd: |
-          sudo cp /etc/rancher/k3s/k3s.yaml {{ kubeconfig_path }} && \
-          sudo chown $(whoami):$(whoami) {{ kubeconfig_path }}
+          mkdir -p ~/.kube && \
+          cp /etc/rancher/k3s/k3s.yaml {{ kubeconfig_path }} && \
+          chown $(whoami):$(whoami) {{ kubeconfig_path }}
         creates: "{{ kubeconfig_path }}"
-      become: true
-      become_user: aarav
 
     - name: Set KUBECONFIG environment variable
       lineinfile:
@@ -126,6 +110,7 @@
         ssh-keyscan -H github.com >> ~/.ssh/known_hosts
       args:
         executable: /bin/bash
+      # become: false
 
     - name: Clone Airflow Git repository
       git:
@@ -133,6 +118,7 @@
         dest: /tmp/k8s-airflow
         version: HEAD
         key_file: ~/.ssh/id_ed25519
+      # become: false
 
     - name: Add Helm Airflow repository
       shell:
@@ -155,6 +141,7 @@
           kubectl create secret generic git-ssh-key \
             --from-file=ssh-privatekey=/home/$(whoami)/.ssh/id_ed25519 -n airflow
         creates: /tmp/k8s-airflow/ssh-secret-created
+      # become: false
 
     - name: Install Airflow using Helm
       shell:
