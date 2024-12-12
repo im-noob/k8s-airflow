@@ -38,8 +38,14 @@ helm version
 echo 'export KUBECONFIG=~/.kube/config' >> ~/.bashrc
 mkdir ~/.kube 
 sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
-sudo chown $(whoami):$(whoami) ~/.kube/config # sudo k3s kubectl config view --raw > "$KUBECONFIG" 
+sudo chown $(whoami):$(whoami) ~/.kube/config 
+
+sleep 60s
+export KUBECONFIG=~/.kube/config
+echo 'export KUBECONFIG=~/.kube/config' >> ~/.bashrc
 source ~/.bashrc
+
+# sudo k3s kubectl config view --raw > "$KUBECONFIG" 
 # chmod 600 "$KUBECONFIG"
 # export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 # sudo service k3s stop
