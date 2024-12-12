@@ -36,10 +36,15 @@ curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 helm version
 
 echo 'export KUBECONFIG=~/.kube/config' >> ~/.bashrc
+mkdir ~/.kube 
+sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+sudo chown $(whoami):$(whoami) ~/.kube/config# sudo k3s kubectl config view --raw > "$KUBECONFIG" 
 source ~/.bashrc
-mkdir ~/.kube && sudo k3s kubectl config view --raw > "$KUBECONFIG" && chmod 600 "$KUBECONFIG"
-
-
+# chmod 600 "$KUBECONFIG"
+# export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+# sudo service k3s stop
+# sudo service k3s start
+# source ~/.bashrc
 # BUilding airflow
 
 docker build -t custom-airflow:latest .
