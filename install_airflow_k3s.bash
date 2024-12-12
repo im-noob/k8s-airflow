@@ -28,7 +28,7 @@ kubectl get nodes
 sudo ln -s /usr/local/bin/k3s /usr/local/bin/kubectl
 kubectl version --client
 
-sudo systemctl status k3s
+sudo systemctl status k3s --no-pager
 
 # installing helm
 curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
@@ -38,7 +38,7 @@ helm version
 echo 'export KUBECONFIG=~/.kube/config' >> ~/.bashrc
 mkdir ~/.kube 
 sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
-sudo chown $(whoami):$(whoami) ~/.kube/config# sudo k3s kubectl config view --raw > "$KUBECONFIG" 
+sudo chown $(whoami):$(whoami) ~/.kube/config # sudo k3s kubectl config view --raw > "$KUBECONFIG" 
 source ~/.bashrc
 # chmod 600 "$KUBECONFIG"
 # export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
