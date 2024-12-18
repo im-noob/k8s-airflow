@@ -1,13 +1,13 @@
 ---
 - name: Install K3s, Docker, Helm, and Airflow
-  hosts: local
+  hosts: div_prod
   remote_user: aarav
   environment:
     KUBECONFIG: "/home/aarav/.kube/config"
 
   vars:
-    airflow_git_repo: "git@github.com:im-noob/k8s-airflow.git"
-    kubeconfig_path: "~/.kube/config"
+    airflow_git_repo: "https://github.com/im-noob/k8s-airflow.git"
+    kubeconfig_path: "/home/aarav/.kube/config"
 
   tasks:
     # System updates (requires elevated privileges)
@@ -95,6 +95,7 @@
       shell:
         cmd: "curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash"
         creates: /usr/local/bin/helm
+      become: true
 
     - name: Verify Helm installation
       command: "/usr/local/bin/helm version"
@@ -102,15 +103,14 @@
 
     - name: Ensure .kube directory exists
       shell: mkdir -p ~/.kube
-      
+
     - name: Configure kubeconfig
       shell:
         cmd: |
-          sudo cp /etc/rancher/k3s/k3s.yaml {{ kubeconfig_path }} && \
-          sudo chown $(whoami):$(whoami) {{ kubeconfig_path }}
+          cp /etc/rancher/k3s/k3s.yaml {{ kubeconfig_path }} && \
+          chown {{ ansible_user }}:{{ ansible_user }} {{ kubeconfig_path }}
         creates: "{{ kubeconfig_path }}"
       become: true
-      become_user: aarav
 
     - name: Set KUBECONFIG environment variable
       lineinfile:
@@ -130,12 +130,27 @@
       args:
         executable: /bin/bash
 
-    - name: Clone Airflow Git repository
-      git:
-        repo: "{{ airflow_git_repo }}"
-        dest: /tmp/k8s-airflow
-        version: HEAD
-        key_file: ~/.ssh/id_rsa
+    - name: Ensure destination directory exists
+      file:
+        path: /tmp/k8s-airflow/
+        state: directory
+        mode: '0755'
+
+    - name: Synchronize local directory to remote machine
+      synchronize:
+        src: ./div_config/  # Local directory
+        dest: /tmp/k8s-airflow/  # Remote directory
+        rsync_opts:
+          - "--chmod=0755"
+
+    - name: Build and tag Docker image using docker CLI
+      command: >
+        docker build -t custom-airflow:latest . &&
+        docker tag custom-airflow:latest aarav/custom-airflow:latest &&
+        docker push aarav/custom-airflow:latest
+      args:
+        chdir: /tmp/k8s-airflow  # Directory containing the Dockerfile
+
 
     - name: Add Helm Airflow repository
       shell:
@@ -148,8 +163,7 @@
     - name: Apply PVC configurations
       shell:
         cmd: |
-          kubectl apply -f /tmp/k8s-airflow/airflow-shared-data-pvc.yaml -n airflow && \
-          kubectl apply -f /tmp/k8s-airflow/airflow-trigger-pvc.yaml -n airflow
+          kubectl apply -f /tmp/k8s-airflow/airflow-shared-data-pvc.yaml -n airflow
 
     - name: Create SSH secret for Git
       shell:
