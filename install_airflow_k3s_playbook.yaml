@@ -143,14 +143,16 @@
         rsync_opts:
           - "--chmod=0755"
 
-    - name: Build and tag Docker image using docker CLI
-      command: >
-        docker build -t custom-airflow:latest . &&
-        docker tag custom-airflow:latest aarav/custom-airflow:latest &&
-        docker push aarav/custom-airflow:latest
+    - name: Build Docker image using docker CLI
+      command: docker build -t custom-airflow:latest .
       args:
         chdir: /tmp/k8s-airflow  # Directory containing the Dockerfile
 
+    - name: Tag the Docker image
+      command: docker tag custom-airflow:latest aarav/custom-airflow:latest
+
+    - name: Push the Docker image to the registry
+      command: docker push aarav/custom-airflow:latest
 
     - name: Add Helm Airflow repository
       shell:
