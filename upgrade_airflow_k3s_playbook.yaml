@@ -1,0 +1,61 @@
+---
+- name: Install K3s, Docker, Helm, and Airflow
+  hosts: div_prod
+  remote_user: merit
+  environment:
+    KUBECONFIG: "/home/merit/.kube/config"
+
+  vars:
+    kubeconfig_path: "/home/merit/.kube/config"
+
+  tasks:
+    - name: Ensure destination directory exists
+      file:
+        path: /tmp/k8s-airflow/
+        state: directory
+        mode: '0755'
+
+    - name: Synchronize local directory to remote machine
+      synchronize:
+        src: ./div_config/  # Local directory
+        dest: /tmp/k8s-airflow/  # Remote directory
+        rsync_opts:
+          - "--chmod=0755"
+
+    - name: Build Docker image using docker CLI
+      command: docker build -t custom-airflow:latest .
+      args:
+        chdir: /tmp/k8s-airflow  # Directory containing the Dockerfile
+
+    - name: Tag the Docker image
+      command: docker tag custom-airflow:latest meritgroup082/custom-airflow:latest
+
+    - name: Push the Docker image to the registry
+      command: docker push meritgroup082/custom-airflow:latest
+
+    - name: Add Helm Airflow repository
+      shell:
+        cmd: "helm repo add apache-airflow https://airflow.apache.org && helm repo update"
+
+    - name: Apply PVC configurations
+      shell:
+        cmd: |
+          kubectl apply -f /tmp/k8s-airflow/airflow-shared-data-pvc.yaml -n airflow
+
+    - name: Upgrade Airflow using Helm
+      shell:
+        cmd: |
+          helm upgrade --install airflow apache-airflow/airflow \
+            --namespace airflow \
+            -f /tmp/k8s-airflow/airflow-values.yaml --debug --recreate-pods
+
+    - name: Verify Airflow pods
+      command: "kubectl get pods --namespace airflow"
+
+    - name: Verify Airflow resources
+      command: "kubectl get all --namespace airflow"
+
+    - name: Clean up temporary files
+      file:
+        path: /tmp/k8s-airflow
+        state: absent
