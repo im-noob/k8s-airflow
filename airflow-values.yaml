@@ -101,6 +101,14 @@ webserver:
     - name: airflow-storage
       mountPath: /opt/airflow/data-new
 
+  defaultUser:
+    enabled: true
+    role: Admin
+    username: amritesh
+    email: amritesh.kumar@meritgroup.co.uk
+    firstName: Amritesh
+    lastName: kumar
+    password: pass
 
 # dags:
 #   # mountPath: /opt/airflow/dags/repo/dags
@@ -154,7 +162,7 @@ scheduler:
         - name: GITSYNC_DEPTH
           value: "1"
         - name: GITSYNC_WAIT
-          value: "15"  # Poll every 30 seconds
+          value: "60"  # Poll every 30 seconds
         - name: GITSYNC_MAX_SYNC_FAILURES
           value: "3000"
         - name: GITSYNC_SSH
@@ -167,6 +175,10 @@ scheduler:
           value: "false"  # Disable known_hosts checking if not needed
         - name: GITSYNC_MAX_SYNC_FAILURES
           value: "10"
+        - name: GITSYNC_LOG_LEVEL
+          value: "debug"
+        - name: GITSYNC_VERBOSE
+          value: "1"
       volumeMounts:
         - name: airflow-storage
           mountPath: /opt/airflow/data-new  # Sync destination folder # Match this to the GITSYNC_ROOT
@@ -199,4 +211,69 @@ scheduler:
 
 extraEnv: |
   - name: AIRFLOW__WEBSERVER__INSTANCE_NAME
-    value: 'K8S'
+    value: 'DIV Airflow'
+  - name: AIRFLOW__SMTP__SMTP_STARTTLS 
+    value: 'True'
+  - name: AIRFLOW__SMTP__SMTP_SSL 
+    value: 'False'
+  - name: AIRFLOW__SMTP__SMTP_PORT 
+    value: '587'
+  - name: AIRFLOW__SMTP__SMTP_HOST 
+    value: '74.80.234.196'
+  - name: AIRFLOW__SMTP__SMTP_USER 
+    value: 'meritgroup'
+  - name: AIRFLOW__SMTP__SMTP_PASSWORD 
+    value: 'sXNdrc6JU'
+  - name: AIRFLOW__SMTP__SMTP_MAIL_FROM 
+    value: 'autoemailsender@meritgroup.co.uk'
+  - name: AIRFLOW__WEBSERVER__BASE_URL 
+    value: 'http://10.101.53.115:8080'
+  - name: AIRFLOW__LOGGING__REMOTE_LOGGING 
+    value: 'True'
+  - name: AIRFLOW__LOGGING__REMOTE_BASE_LOG_FOLDER 
+    value: 'wasb/logs/DIV'
+  - name: AIRFLOW__LOGGING__REMOTE_LOG_CONN_ID 
+    value: 'AZURE_STORAGE_CONNECTION_FOR_LOGGING'
+  - name: AIRFLOW__LOGGING__DELETE_LOCAL_LOGS 
+    value: 'True'
+  - name: AIRFLOW__AZURE_REMOTE_LOGGING__REMOTE_WASB_LOG_CONTAINER 
+    value: 'logs'
+  - name: AIRFLOW__CORE__TEST_CONNECTION 
+    value: 'Enabled'
+  - name: AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK 
+    value: 'true'
+  - name: AIRFLOW__CORE__DEFAULT_POOL_TASK_SLOT_COUNT 
+    value: '50'
+  - name: AIRFLOW__SCHEDULER__PARSING_CLEANUP_INTERVAL 
+    value: '5'
+  - name: AIRFLOW__SCHEDULER__STALE_DAG_THRESHOLD 
+    value: '5'
+  - name: AIRFLOW__SCHEDULER__DAG_DIR_LIST_INTERVAL 
+    value: '5'
+  - name: AIRFLOW__SCHEDULER__CATCHUP_BY_DEFAULT 
+    value: 'false'
+  - name: AIRFLOW__WEBSERVER__PAGE_SIZE 
+    value: '10'
+  
+  - name: DATABASE_HOST_MYSQL 
+    value: '0.0.0.0'
+  - name: DATABASE_NAME_MYSQL 
+    value: '_dev'
+  - name: DATABASE_USER_MYSQL 
+    value: 'admin'
+  - name: DATABASE_PASS_MYSQL 
+    value: 'admin'
+
+  - name: FTP_HOST 
+    value: '0.0.0.0'
+  - name: FTP_USERNAME 
+    value: 'Merit_DIV'
+  - name: FTP_PASSWORD 
+    value: 'pass'
+  - name: FTP_PORT 
+    value: '22'
+  - name: FTP_ROOT_DIRECTORY
+    value: '/test_folder'
+
+  - name: ROOT_FOLDER_SCRAPER
+    value: '/opt/airflow/data/scraping.git/div_prod/spiders'

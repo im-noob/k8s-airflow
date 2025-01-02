@@ -1,2 +1,11 @@
 fuzzywuzzy
 scrapy
+python-slugify
+requests
+tldextract
+openpyxl
+PyMySQL
+numpy
+pandas
+brotli
+apache-airflow-providers-microsoft-azure

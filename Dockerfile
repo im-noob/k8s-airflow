@@ -3,6 +3,11 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY ./dags/ dags/
+COPY ./plugins/ plugins/
+
+USER root
+RUN apt-get update && apt-get install -y nano && apt-get clean
+USER airflow
 
 # USER root
 # RUN apt update && \

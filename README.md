@@ -139,3 +139,18 @@ hello_operator
 [local]
 localhost ansible_connection=local
 
+
+
+    # For your Env Login
+    # this will help user to login into particular env
+    env_login() {
+        local env_name="$1"
+        case "$env_name" in
+            prod) kubectl exec -it -n airflow $(kubectl get pod -n airflow -l component=worker -o jsonpath="{.items[0].metadata.name}") -c worker -- /bin/bash ;;
+            git) kubectl exec -it -n airflow $(kubectl get pod -n airflow -l component=scheduler -o jsonpath="{.items[0].metadata.name}") -c git-sync -- /bin/bash ;;
+            *) echo "Invalid environment name. Usage: env_login <env_name[prod]>" ;;
+        esac
+    }
+
+    kubectl logs airflow-triggerer-5884d69c4b-hf4r5 -c git-sync-init --namespace airflow
+
